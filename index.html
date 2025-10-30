@@ -12,10 +12,213 @@
             padding: 20px;
             background-color: #f5f5f5;
         }
-        /* 这里省略样式部分，您可以直接复制index.html的完整内容 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .chart-container {
+            width: 100%;
+            height: 600px;
+        }
+        .legend {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
-    <!-- 这里省略HTML结构部分 -->
+    <div class="container">
+        <h1>予田商品销售数据气泡图</h1>
+        <div id="chart" class="chart-container"></div>
+        <div class="legend">
+            <p>气泡面积代表销量范围（面积越大销量越高）</p>
+        </div>
+    </div>
+
+    <script>
+        // 商品数据
+        const productData = [
+            {name: "【超值版】S10.5予田单峰玻色因胜肽多效面霜Ⅱ抗皱缓紧致保价一年", category: "脸部", type: "霜", sales: 37500},
+            {name: "【天花板】予田S9玻色因胜肽抗皱紧致淡纹芋螺肽眼霜V保价一整年", category: "眼部", type: "霜", sales: 37500},
+            {name: "utin/予田【宇宙版】S15单峰玻色因抗皱紧致舒缓面霜", category: "脸部", type: "霜", sales: 17500},
+            {name: "予田【10000ppm】麦角硫因多肽精华液抗糖减黄抗皱紧致", category: "脸部", type: "精华液", sales: 12500},
+            {name: "utin/予田【宇宙版】焕亮美白淡斑霜", category: "脸部", type: "霜", sales: 6425},
+            {name: "【宇宙版】予田S10多肽鎏光抗皱紧致舒缓淡眼纹保湿黑眼圈抗老眼霜", category: "眼部", type: "霜", sales: 12500},
+            {name: "utin/予田【宇宙版】12000ppm麦角硫因鎏光精华液", category: "脸部", type: "精华液", sales: 8750},
+            {name: "utin/予田【天花板】玻尿酸精华液Ⅱ极简护肤品紧致保湿舒缓", category: "脸部", type: "精华液", sales: 17500},
+            {name: "予田抗老护肤品组合紧致舒缓保湿", category: "组合", type: "组合", sales: 1750},
+            {name: "【宇宙版】予田胶原蛋白舒缓精华乳保湿紧致抗皱15ml", category: "脸部", type: "乳", sales: 3750},
+            {name: "【超值版】2000ppm麦角硫因舒缓精华液双抗紧致温和", category: "脸部", type: "精华液", sales: 17500},
+            {name: "【宇宙版】VC精华乳Ⅱ次抛精华VC-IP黄金VC舒缓护肤", category: "脸部", type: "精华液", sales: 8750},
+            {name: "【粉丝回馈】予田臻享高端保湿抗皱紧致礼盒", category: "组合", type: "组合", sales: 875},
+            {name: "utin/予田【宇宙版】胶原蛋白鎏光精华乳Ⅱ", category: "脸部", type: "乳", sales: 3750},
+            {name: "【宇宙版】予田神经酰胺舒缓精华乳", category: "脸部", type: "乳", sales: 3750},
+            {name: "utin/予田70ppm予田胶原蛋白抗皱水嫩精华乳", category: "脸部", type: "乳", sales: 3750},
+            {name: "【私人定制】予田臻享多效抗皱紧致面霜", category: "脸部", type: "霜", sales: 375},
+            {name: "【宇宙版】予田胶原蛋白屏障特护霜", category: "脸部", type: "霜", sales: 1750},
+            {name: "utin/予田【宇宙版】玻尿酸鎏光精华液控油保湿抗皱紧致舒缓", category: "脸部", type: "精华液", sales: 8750},
+            {name: "utin/予田【超值版】S7单峰玻色因抗皱紧致眼霜保湿黑眼圈眼袋泪沟", category: "眼部", type: "霜", sales: 6250},
+            {name: "【天花板】予田角鲨烷精华油保湿维稳温和无刺激舒缓紧致", category: "脸部", type: "油", sales: 3750},
+            {name: "胶原蛋白鎏光精华乳Ⅱ", category: "脸部", type: "乳", sales: 1750},
+            {name: "【天花板】玻色因多肽精华液Ⅱ", category: "脸部", type: "精华液", sales: 3750},
+            {name: "【私人定制】予田臻享多效抗皱紧致眼霜", category: "眼部", type: "霜", sales: 375},
+            {name: "【天花板】予田壳聚糖膜焕多效贴保湿年轻紧致舒缓温和", category: "脸部", type: "面膜/膜/贴", sales: 3750},
+            {name: "【天花板】舒缓保湿紧致抗皱角鲨烷精华油", category: "脸部", type: "油", sales: 3750},
+            {name: "【宇宙版】予田补骨脂酚多效精华乳", category: "脸部", type: "乳", sales: 625},
+            {name: "【超值版】予田玻色因抗皱紧致精华液舒缓精华液", category: "脸部", type: "精华液", sales: 3750},
+            {name: "【宇宙版】予田高保湿润面霜", category: "脸部", type: "霜", sales: 1750},
+            {name: "【活动专用链接】予田玻色因多肽精华液", category: "脸部", type: "面膜/膜/贴", sales: 17500},
+            {name: "【活动专用链接】沁润护手霜嫩肤水润丝滑", category: "手部", type: "霜", sales: 1750},
+            {name: "予田莹亮润彩唇膏", category: "唇部", type: "膏", sales: 17500},
+            {name: "utin/予田白睡莲花涂抹面膜养肤滋润保湿", category: "脸部", type: "面膜/膜/贴", sales: 3750},
+            {name: "【超值版】S7玻色因抗皱紧致眼霜Ⅱ旅行装", category: "眼部", type: "霜", sales: 3750},
+            {name: "utin/予田新款葡糖苷泡泡洁面露 非氨基酸洗面奶", category: "脸部", type: "洁面", sales: 8750},
+            {name: "[天花板]予田胶原蛋白弹润紧致精华乳 旅行装", category: "脸部", type: "乳", sales: 1750},
+            {name: "utin/予田海云丝舒缓保湿面膜", category: "脸部", type: "面膜/膜/贴", sales: 6250},
+            {name: "2023新款视黄醇紧致精华乳面部涂抹快速好吸收抗皱抗老", category: "脸部", type: "乳", sales: 1750},
+            {name: "Unit予田舒缓精华油 复配滋润版精华油10ml尝鲜装", category: "脸部", type: "油", sales: 1750},
+            {name: "【超值版】玻尿酸泛醇精华液极简护肤品紧致保湿舒缓抗老", category: "脸部", type: "精华液", sales: 1750},
+            {name: "utin/予田精致修护敏感肌：胶原蛋白次抛1盒+神经酰胺1瓶", category: "脸部", type: "组合", sales: 1750},
+            {name: "utin/予田美夕夕净纯喷雾（清爽）", category: "脸部", type: "水/喷雾", sales: 6250},
+            {name: "美夕夕净纯喷雾（清爽）", category: "脸部", type: "水/喷雾", sales: 3750},
+            {name: "Unit予田舒缓精华油10ML", category: "脸部", type: "油", sales: 875},
+            {name: "utin/予田轻透素颜霜", category: "脸部", type: "霜", sales: 5675},
+            {name: "【宇宙版】予田温和净澈洁颜油卸妆油角鲨烷水润", category: "脸部", type: "油", sales: 1750},
+            {name: "【天花板】予田丰润唇膜保湿抗皱紧致舒缓", category: "唇部", type: "面膜/膜/贴", sales: 1750},
+            {name: "【天花板】予田虫草遮瑕气垫霜控油保湿", category: "脸部", type: "霜", sales: 625},
+            {name: "utin/予田鎏光辣木籽精华油", category: "脸部", type: "油", sales: 375},
+            {name: "【宇宙版】补骨脂酚多效精华乳", category: "脸部", type: "乳", sales: 375},
+            {name: "予田花悦绽放香水", category: "其他 (香水)", type: "水/喷雾", sales: 875},
+            {name: "【天花板】予田透气柔焦匀净蜜粉", category: "脸部", type: "粉", sales: 388},
+            {name: "utin/予田虫草遮瑕气垫霜透亮气垫霜", category: "脸部", type: "霜", sales: 175},
+            {name: "【宇宙版】予田温和卸妆油清洁清爽洁颜油", category: "脸部", type: "油", sales: 175},
+            {name: "utin/予田新款神经酰胺修护精华乳", category: "脸部", type: "乳", sales: 62.5},
+            {name: "utin/予田予田VC烟酰胺多效身体乳紧致润肤舒爽嫩肤", category: "身体", type: "乳", sales: 87.5}
+        ];
+
+        // 分类和剂型映射
+        const categories = [...new Set(productData.map(item => item.category))];
+        const types = [...new Set(productData.map(item => item.type))];
+        
+        // 创建图表
+        const chartDom = document.getElementById('chart');
+        const myChart = echarts.init(chartDom);
+
+        // 准备数据系列
+        const seriesData = productData.map(item => {
+            const categoryIndex = categories.indexOf(item.category);
+            const typeIndex = types.indexOf(item.type);
+            
+            return {
+                name: item.name,
+                value: [categoryIndex, typeIndex, item.sales],
+                sales: item.sales,
+                category: item.category,
+                type: item.type
+            };
+        });
+
+        // 配置项
+        const option = {
+            title: {
+                text: '商品销售分布气泡图',
+                left: 'center',
+                textStyle: {
+                    fontSize: 18,
+                    fontWeight: 'bold'
+                }
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: function(params) {
+                    return `${params.data.name}<br/>
+                            部位: ${params.data.category}<br/>
+                            剂型: ${params.data.type}<br/>
+                            销量: ${params.data.sales.toLocaleString()}`;
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: categories,
+                name: '部位',
+                nameLocation: 'middle',
+                nameGap: 30,
+                axisLabel: {
+                    interval: 0,
+                    rotate: 45
+                }
+            },
+            yAxis: {
+                type: 'category',
+                data: types,
+                name: '剂型',
+                nameLocation: 'middle',
+                nameGap: 40
+            },
+            visualMap: {
+                show: false,
+                dimension: 2,
+                min: 0,
+                max: 50000,
+                inRange: {
+                    symbolSize: [10, 60]
+                }
+            },
+            series: [{
+                type: 'scatter',
+                symbolSize: function(data) {
+                    return Math.sqrt(data[2]) * 0.5;
+                },
+                data: seriesData,
+                emphasis: {
+                    focus: 'series',
+                    label: {
+                        show: true,
+                        formatter: function(param) {
+                            return param.data.name.split('】')[1]?.substring(0, 8) + '...' || param.data.name.substring(0, 8) + '...';
+                        },
+                        position: 'top'
+                    }
+                },
+                itemStyle: {
+                    color: function(params) {
+                        // 根据销量范围设置不同颜色
+                        const sales = params.data[2];
+                        if (sales > 10000) return '#ff4d4f';
+                        if (sales > 5000) return '#ff7a45';
+                        if (sales > 1000) return '#ffa940';
+                        if (sales > 500) return '#ffc53d';
+                        return '#ffec3d';
+                    },
+                    opacity: 0.7
+                }
+            }]
+        };
+
+        // 使用配置项和数据显示图表
+        myChart.setOption(option);
+
+        // 响应窗口大小变化
+        window.addEventListener('resize', function() {
+            myChart.resize();
+        });
+    </script>
 </body>
 </html>
